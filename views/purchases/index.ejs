@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-shopping-cart"></i> Data Pembelian</h3>
+    <a href="/purchases/add" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Input Pembelian</a>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <form method="GET" action="/purchases" class="filter-form">
+      <div class="filter-group">
+        <label>Status</label>
+        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
+          <option value="all" <%= filter.status === 'all' ? 'selected' : '' %>>Semua</option>
+          <option value="active" <%= filter.status === 'active' ? 'selected' : '' %>>Aktif</option>
+          <option value="cancelled" <%= filter.status === 'cancelled' ? 'selected' : '' %>>Dibatalkan</option>
+        </select>
+      </div>
+      <div class="filter-group search-group">
+        <label>Cari</label>
+        <div class="search-input">
+          <i class="fas fa-search"></i>
+          <input type="text" name="search" class="form-control form-control-sm" value="<%= filter.search %>" placeholder="Invoice / Nama pelanggan...">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-outline btn-sm"><i class="fas fa-filter"></i> Filter</button>
+      <a href="/purchases" class="btn btn-sm btn-ghost"><i class="fas fa-rotate-left"></i> Reset</a>
+    </form>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>No. Invoice</th>
+          <th>Pelanggan</th>
+          <th>Produk</th>
+          <th>Qty</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (purchases.length === 0) { %>
+        <tr><td colspan="8" class="text-center text-muted py-4">Tidak ada data pembelian</td></tr>
+        <% } %>
+        <% purchases.forEach(p => { %>
+        <tr class="<%= p.status === 'cancelled' ? 'row-cancelled' : '' %>">
+          <td><code><%= p.invoice_no %></code></td>
+          <td><%= p.customer_name %></td>
+          <td><%= p.product_name %></td>
+          <td><%= p.quantity %></td>
+          <td><strong>Rp <%= Number(p.total_price).toLocaleString('id-ID') %></strong></td>
+          <td>
+            <span class="badge <%= p.status === 'active' ? 'badge-green' : 'badge-red' %>">
+              <i class="fas fa-<%= p.status === 'active' ? 'check' : 'ban' %>"></i>
+              <%= p.status === 'active' ? 'Aktif' : 'Dibatalkan' %>
+            </span>
+          </td>
+          <td class="text-sm text-muted"><%= p.created_at %></td>
+          <td>
+            <div class="action-btns">
+              <a href="/purchases/detail/<%= p.id %>" class="btn btn-sm btn-outline">
+                <i class="fas fa-eye"></i>
+              </a>
+              <% if (p.status === 'active') { %>
+              <button class="btn btn-sm btn-danger" onclick="openCancelModal(<%= p.id %>, '<%= p.invoice_no %>')">
+                <i class="fas fa-ban"></i>
+              </button>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer text-muted text-sm">
+    Total: <strong><%= purchases.length %></strong> transaksi
+  </div>
+</div>
+
+<!-- Modal Cancel -->
+<div id="cancelModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-ban"></i> Batalkan Pembelian</h3>
+      <button onclick="closeCancelModal()" class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted mb-2">Invoice: <strong id="cancel-invoice-no"></strong></p>
+      <p class="alert alert-warning"><i class="fas fa-triangle-exclamation"></i> Stok produk akan dikembalikan otomatis.</p>
+      <form id="cancelForm" method="POST">
+        <div class="form-group">
+          <label>Alasan Pembatalan</label>
+          <textarea name="cancel_reason" class="form-control" rows="3" placeholder="Tuliskan alasan pembatalan..." required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeCancelModal()" class="btn btn-outline">Batal</button>
+          <button type="submit" class="btn btn-danger"><i class="fas fa-ban"></i> Konfirmasi Batalkan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openCancelModal(id, invoice) {
+    document.getElementById('cancel-invoice-no').textContent = invoice;
+    document.getElementById('cancelForm').action = `/purchases/cancel/${id}`;
+    document.getElementById('cancelModal').style.display = 'flex';
+  }
+  function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';
+  }
+</script>
+
+<%- include('../partials/footer') %>

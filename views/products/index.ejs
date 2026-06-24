@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-box"></i> Daftar Produk</h3>
+    <a href="/products/add" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Tambah Produk</a>
+  </div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nama Produk</th>
+          <th>Kategori</th>
+          <th>Harga</th>
+          <th>Stok</th>
+          <th>Deskripsi</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% products.forEach((p, i) => { %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><strong><%= p.name %></strong></td>
+          <td><span class="badge badge-blue"><%= p.category %></span></td>
+          <td>Rp <%= Number(p.price).toLocaleString('id-ID') %></td>
+          <td>
+            <span class="badge <%= p.stock <= 5 ? 'badge-red' : (p.stock <= 15 ? 'badge-yellow' : 'badge-green') %>">
+              <%= p.stock %> unit
+            </span>
+          </td>
+          <td class="text-muted text-sm"><%= p.description || '-' %></td>
+          <td>
+            <div class="action-btns">
+              <a href="/products/edit/<%= p.id %>" class="btn btn-sm btn-outline">
+                <i class="fas fa-edit"></i>
+              </a>
+              <form method="POST" action="/products/delete/<%= p.id %>" onsubmit="return confirm('Hapus produk ini?')">
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

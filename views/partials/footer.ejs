@@ -1,0 +1,17 @@
+      </div><!-- end .content -->
+    </main>
+  </div><!-- end .layout -->
+
+  <script>
+    // Date display
+    const d = new Date();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('date-now').textContent = d.toLocaleDateString('id-ID', opts);
+
+    // Auto-close alerts
+    document.querySelectorAll('.alert').forEach(el => {
+      setTimeout(() => el.style.opacity = '0', 3000);
+    });
+  </script>
+</body>
+</html>

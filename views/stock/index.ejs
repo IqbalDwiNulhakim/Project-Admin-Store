@@ -1,0 +1,92 @@
+<%- include('../partials/header') %>
+
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-warehouse"></i> Manajemen Stok</h3>
+    <span class="text-muted text-sm">Update stok produk secara manual</span>
+  </div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Produk</th>
+          <th>Kategori</th>
+          <th>Harga Satuan</th>
+          <th>Stok Saat Ini</th>
+          <th>Status</th>
+          <th>Terakhir Update</th>
+          <th>Update Stok</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% stocks.forEach((s, i) => { %>
+        <tr class="<%= s.quantity <= 5 ? 'row-warning' : '' %>">
+          <td><%= i + 1 %></td>
+          <td><strong><%= s.product_name %></strong></td>
+          <td><span class="badge badge-blue"><%= s.category %></span></td>
+          <td>Rp <%= Number(s.price).toLocaleString('id-ID') %></td>
+          <td><strong class="<%= s.quantity <= 5 ? 'text-danger' : '' %>"><%= s.quantity %></strong></td>
+          <td>
+            <span class="badge <%= s.quantity === 0 ? 'badge-red' : (s.quantity <= 5 ? 'badge-yellow' : 'badge-green') %>">
+              <%= s.quantity === 0 ? 'Habis' : (s.quantity <= 5 ? 'Menipis' : 'Tersedia') %>
+            </span>
+          </td>
+          <td class="text-sm text-muted"><%= s.updated_at %></td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="openStockModal(<%= s.product_id %>, '<%= s.product_name %>', <%= s.quantity %>)">
+              <i class="fas fa-pencil"></i> Update
+            </button>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Update Stok -->
+<div id="stockModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-warehouse"></i> Update Stok</h3>
+      <button onclick="closeModal()" class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted">Produk: <strong id="modal-product-name"></strong></p>
+      <p class="text-muted">Stok saat ini: <strong id="modal-current-stock"></strong> unit</p>
+      <form id="stockForm" method="POST">
+        <div class="form-group">
+          <label>Tipe Update</label>
+          <select name="action" class="form-control" id="stock-action">
+            <option value="set">Set (Langsung atur ke nilai)</option>
+            <option value="add">Tambah Stok</option>
+            <option value="reduce">Kurangi Stok</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Jumlah</label>
+          <input type="number" name="quantity" class="form-control" min="0" required placeholder="Masukkan jumlah">
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeModal()" class="btn btn-outline">Batal</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openStockModal(id, name, qty) {
+    document.getElementById('modal-product-name').textContent = name;
+    document.getElementById('modal-current-stock').textContent = qty;
+    document.getElementById('stockForm').action = `/stock/update/${id}`;
+    document.getElementById('stockModal').style.display = 'flex';
+  }
+  function closeModal() {
+    document.getElementById('stockModal').style.display = 'none';
+  }
+</script>
+
+<%- include('../partials/footer') %>

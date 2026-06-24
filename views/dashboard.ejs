@@ -1,0 +1,84 @@
+<%- include('partials/header') %>
+
+<div class="stats-grid">
+  <div class="stat-card stat-blue">
+    <div class="stat-icon"><i class="fas fa-box"></i></div>
+    <div class="stat-info">
+      <p class="stat-label">Total Produk</p>
+      <h2 class="stat-value"><%= stats.totalProducts %></h2>
+    </div>
+  </div>
+  <div class="stat-card stat-green">
+    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+    <div class="stat-info">
+      <p class="stat-label">Pembelian Aktif</p>
+      <h2 class="stat-value"><%= stats.totalPurchases %></h2>
+    </div>
+  </div>
+  <div class="stat-card stat-red">
+    <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+    <div class="stat-info">
+      <p class="stat-label">Pembelian Dibatalkan</p>
+      <h2 class="stat-value"><%= stats.cancelledPurchases %></h2>
+    </div>
+  </div>
+  <div class="stat-card stat-yellow">
+    <div class="stat-icon"><i class="fas fa-rupiah-sign"></i></div>
+    <div class="stat-info">
+      <p class="stat-label">Total Pendapatan</p>
+      <h2 class="stat-value">Rp <%= Number(stats.totalRevenue).toLocaleString('id-ID') %></h2>
+    </div>
+  </div>
+</div>
+
+<% if (stats.lowStock > 0) { %>
+<div class="alert alert-warning">
+  <i class="fas fa-triangle-exclamation"></i>
+  <strong><%= stats.lowStock %> produk</strong> memiliki stok ≤ 5 unit. <a href="/stock">Cek stok →</a>
+</div>
+<% } %>
+
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-clock"></i> Pembelian Terbaru</h3>
+    <a href="/purchases/add" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Tambah</a>
+  </div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>No. Invoice</th>
+          <th>Pelanggan</th>
+          <th>Produk</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Tanggal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (recentPurchases.length === 0) { %>
+        <tr><td colspan="6" class="text-center text-muted">Belum ada pembelian</td></tr>
+        <% } %>
+        <% recentPurchases.forEach(p => { %>
+        <tr>
+          <td><code><%= p.invoice_no %></code></td>
+          <td><%= p.customer_name %></td>
+          <td><%= p.product_name %></td>
+          <td>Rp <%= Number(p.total_price).toLocaleString('id-ID') %></td>
+          <td>
+            <span class="badge <%= p.status === 'active' ? 'badge-green' : 'badge-red' %>">
+              <%= p.status === 'active' ? 'Aktif' : 'Dibatalkan' %>
+            </span>
+          </td>
+          <td><%= p.created_at %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer">
+    <a href="/purchases" class="text-link">Lihat semua pembelian →</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

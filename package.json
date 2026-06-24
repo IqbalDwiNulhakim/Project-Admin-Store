@@ -1,0 +1,22 @@
+{
+  "name": "project1-admin-store",
+  "version": "1.0.0",
+  "description": "Admin Store - Sistem manajemen pembelian toko",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.3.0",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "fs-extra": "^11.3.5",
+    "method-override": "^3.0.0",
+    "sql.js": "^1.14.1",
+    "uuid": "^14.0.1"
+  }
+}
